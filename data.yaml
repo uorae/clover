@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 2
+names: ['clover-3', 'clover-4']
+
+roboflow:
+  workspace: rachels-workspace-akiyq
+  project: rachels-workspace-akiyq
+  version: dataset
+  license: Private
+  url: https://app.roboflow.com/rachels-workspace-akiyq/rachels-workspace-akiyq/dataset
