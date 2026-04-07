@@ -1,25 +1,45 @@
-import numpy as np
-import cv2 as cv
+import sys
+import cv2
 from ultralytics import YOLO
- 
+
+if len(sys.argv) < 2:
+  print("Usage: python main.py <video_path>")
+  sys.exit(1)
+
+# Load the YOLO model
 model = YOLO("best.pt")
+
+# Open the video file
+video_path = sys.argv[1]  # Get the video path from command line arguments
+
 try:
-  cap = cv.VideoCapture(0)
+  cap = cv2.VideoCapture(video_path)
 except:
-  print("Cannot open camera")
-  exit()
+  print("Error: Could not open video file.")
+  sys.exit(1)
 
-while True:
-  # Capture frame-by-frame
-  ret, frame = cap.read()
+# Loop through the video frames
+while cap.isOpened():
+  # Read a frame from the video
+  success, frame = cap.read()
 
-  # if frame is read correctly ret is True
-  if not ret:
-    print("Can't receive frame (stream end?). Exiting ...")
+  if success:
+    # Run YOLO inference on the frame
+    results = model(frame)
+
+    # Visualize the results on the frame
+    annotated_frame = results[0].plot()
+
+    # Display the annotated frame
+    cv2.imshow("YOLO Inference", annotated_frame)
+
+    # Break the loop if 'q' is pressed
+    if cv2.waitKey(1) & 0xFF == ord("q"):
+      break
+  else:
+    # Break the loop if the end of the video is reached
     break
-  # Our operations on the frame come here
-  results = model(source=frame, show=True, stream=True)
- 
-# When everything done, release the capture
+
+# Release the video capture object and close the display window
 cap.release()
-cv.destroyAllWindows()
+cv2.destroyAllWindows()
